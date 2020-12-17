@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
+const cors = require("cors");
+
+app.use(cors());
 const port = 4300;
 
 // connect to Mongo

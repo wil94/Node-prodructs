@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const Product = require("./../../models/product");
+const ProductService = require("./../services/productsServices");
+
+console.log("SSSS", ProductService.name);
+ProductService.myFunc();
 
 router.get("/all", async (req, res) => {
   const products = await Product.find();
@@ -13,6 +17,8 @@ router.post("/add", async (req, res) => {
   await newProduct.save();
   res.send("Exito al guardar");
 });
+
+//TODO hacer con repo gitHub
 
 // update whole product propieries
 router.put("/edit/:idProduct", async (req, res) => {
