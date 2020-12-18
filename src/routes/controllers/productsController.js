@@ -1,45 +1,63 @@
 const express = require("express");
 const router = express.Router();
 
-const Product = require("./../../models/product");
 const ProductService = require("./../services/productsServices");
 
-console.log("SSSS", ProductService.name);
-ProductService.myFunc();
-
 router.get("/all", async (req, res) => {
-  const products = await Product.find();
-  res.send(products);
+  try {
+    const products = await ProductService.getAll();
+    res.send(products);
+  } catch (error) {
+    throw new Error("Error: ", error);
+  }
+});
+
+router.get("/available", async (req, res) => {
+  try {
+    const products = await ProductService.getAvailable();
+    res.send(products);
+  } catch (error) {
+    throw new Error("Error: ", error);
+  }
 });
 
 router.post("/add", async (req, res) => {
-  const newProduct = new Product(req.body);
-  await newProduct.save();
-  res.send("Exito al guardar");
+  ProductService.new(req.body)
+    .then((response) => res.send(response))
+    .catch((err) => res.send(err));
 });
 
-//TODO hacer con repo gitHub
+router.get("/productinfo/:idProduct", async (req, res) => {
+  const { idProduct } = req.params;
+  try {
+    const product = await ProductService.productInfo(idProduct);
+    res.send(product);
+  } catch (error) {
+    throw new Error("Error: ", error);
+  }
+});
 
 // update whole product propieries
 router.put("/edit/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
-  await Product.update({ _id: idProduct }, req.body);
-  res.send("Exito al actualizar todo el producto");
+  ProductService.editProduct(idProduct, req.body)
+    .then((response) => res.send(response))
+    .catch((err) => res.send(err));
 });
 
-// update another way
+// update only one of its properties
 router.put("/editavailability/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
-  const product = await Product.findById(idProduct);
-  product.availability = !product.availability;
-  await product.save();
-  res.send("Exito al actualizar availablity en el producto");
+  ProductService.editAvailability(idProduct)
+    .then((response) => res.send(response))
+    .catch((err) => res.send(err));
 });
 
 router.delete("/delete/:idProduct", async (req, res) => {
   const { idProduct } = req.params;
-  await Product.remove({ _id: idProduct });
-  res.send("Exito al eliminar el producto");
+  ProductService.delete(idProduct)
+    .then((response) => res.send(response))
+    .catch((err) => res.send(err));
 });
 
 module.exports = router;
